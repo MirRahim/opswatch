@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Ops Watch",
+  "version": "1.0",
+
+  "permissions": [
+    "alarms",
+    "storage"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/green.png",
+      "32": "icons/green.png"
+    }
+  },
+
+  "options_page": "options.html"
+}
