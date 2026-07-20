@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,23 +91,30 @@
   .status-dot.down    { background: #ef4444; box-shadow: 0 0 5px #ef444488; }
   .status-dot.unknown { background: #475569; }
 
+  .service-info {
+    flex: 1;
+    min-width: 0;
+  }
+
   .service-name {
     font-weight: 500;
     color: #cbd5e1;
-    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .service-url {
+  .service-sub {
     font-size: 11px;
     color: #334155;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 140px;
+    margin-top: 2px;
   }
+
+  .meta { color: #475569; }
+  .meta.error { color: #ef4444; }
 
   .badge {
     font-size: 10px;
@@ -258,7 +266,7 @@
 
   <div class="interval-row">
     <label>Check every</label>
-    <select id="interval-select">      
+    <select id="interval-select">
       <option value="1" selected>1 minute</option>
       <option value="5">5 minutes</option>
       <option value="15">15 minutes</option>

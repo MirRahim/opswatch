@@ -36,11 +36,18 @@ document.querySelectorAll(".tab").forEach(tab => {
   
     list.innerHTML = urls.map(u => {
       const s = u.status || "unknown";
+  
+      const meta = s === "up"
+        ? `<span class="meta">${u.responseTime}ms &middot; ${u.statusCode}</span>`
+        : `<span class="meta error">${u.statusCode}</span>`;
+  
       return `
         <div class="service-row">
           <div class="status-dot ${s}"></div>
-          <div class="service-name">${u.name || u.url}</div>
-          <div class="service-url">${u.url}</div>
+          <div class="service-info">
+            <div class="service-name">${u.name || u.url}</div>
+            <div class="service-sub">${u.url} &nbsp;${meta}</div>
+          </div>
           <div class="badge ${s}">${s.toUpperCase()}</div>
         </div>
       `;
