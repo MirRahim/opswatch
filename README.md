@@ -28,6 +28,10 @@ A minimal Chrome extension that monitors your web services and alerts you when t
 3. Enable **Developer mode** (top right)
 4. Click **Load unpacked** and select the `extension/` folder
 
+<img width="478" height="186" alt="image" src="https://github.com/user-attachments/assets/b20de1ce-f8b1-461e-99a9-bec187fd134c" />
+
+
+
 ## Usage
 
 1. Click the Ops Watch icon in your toolbar
