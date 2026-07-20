@@ -1,16 +1,278 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  body {
+    width: 360px;
+    min-height: 200px;
+    background: #0f1117;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #1e2433;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: #f1f5f9;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+  }
+
+  .logo-dot.has-down {
+    background: #ef4444;
+    box-shadow: 0 0 6px #ef4444;
+  }
+
+  .last-check { font-size: 11px; color: #475569; }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #1e2433;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #64748b;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+
+  .tab.active { color: #e2e8f0; border-bottom-color: #3b82f6; }
+
+  #panel-status { display: block; }
+  #panel-config  { display: none; }
+
+  .panel { padding: 12px 16px; }
+
+  .service-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1a1f2e;
+  }
+
+  .service-row:last-child { border-bottom: none; }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot.up      { background: #22c55e; box-shadow: 0 0 5px #22c55e88; }
+  .status-dot.down    { background: #ef4444; box-shadow: 0 0 5px #ef444488; }
+  .status-dot.unknown { background: #475569; }
+
+  .service-name {
+    font-weight: 500;
+    color: #cbd5e1;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .service-url {
+    font-size: 11px;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .badge.up      { background: #14532d; color: #4ade80; }
+  .badge.down    { background: #450a0a; color: #f87171; }
+  .badge.unknown { background: #1e293b; color: #64748b; }
+
+  .empty {
+    padding: 24px 0;
+    text-align: center;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .empty a { color: #3b82f6; cursor: pointer; }
+
+  .config-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .config-row input {
+    background: #1e2433;
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    color: #e2e8f0;
+    padding: 6px 8px;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .config-row input:focus { border-color: #3b82f6; }
+  .config-row input.inp-name { width: 90px; }
+  .config-row input.inp-url  { flex: 1; }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #475569;
+    font-size: 15px;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .btn-icon:hover { color: #ef4444; }
+
+  .interval-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #1e2433;
+  }
+
+  .interval-row label { font-size: 12px; color: #64748b; }
+
+  .interval-row select {
+    background: #1e2433;
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    color: #e2e8f0;
+    padding: 5px 8px;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .config-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 7px;
+    border-radius: 6px;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover { opacity: 0.85; }
+  .btn-add  { background: #1e2433; color: #94a3b8; }
+  .btn-save { background: #3b82f6; color: #fff; }
+
+  .save-msg {
+    text-align: center;
+    font-size: 11px;
+    color: #22c55e;
+    margin-top: 6px;
+    height: 14px;
+  }
+
+  .check-now {
+    display: block;
+    width: 100%;
+    padding: 7px;
+    margin-top: 10px;
+    background: #1e2433;
+    border: 1px solid #2d3748;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: center;
+  }
+
+  .check-now:hover { background: #262f42; }
+</style>
+</head>
 <body>
 
-<h3>Ops Watch</h3>
+<header>
+  <div class="logo">
+    <div class="logo-dot" id="header-dot"></div>
+    Ops Watch
+  </div>
+  <div class="last-check" id="last-check">—</div>
+</header>
 
-<div id="result">
-Loading...
+<div class="tabs">
+  <div class="tab active" data-tab="status">Status</div>
+  <div class="tab" data-tab="config">Configure</div>
+</div>
+
+<div id="panel-status" class="panel">
+  <div id="service-list"><div class="empty">Loading…</div></div>
+  <button class="check-now" id="check-now">Check now</button>
+</div>
+
+<div id="panel-config" class="panel">
+  <div id="config-rows"></div>
+
+  <div class="interval-row">
+    <label>Check every</label>
+    <select id="interval-select">      
+      <option value="1" selected>1 minute</option>
+      <option value="5">5 minutes</option>
+      <option value="15">15 minutes</option>
+      <option value="30">30 minutes</option>
+    </select>
+  </div>
+
+  <div class="config-actions">
+    <button class="btn btn-add" id="btn-add">+ Add</button>
+    <button class="btn btn-save" id="btn-save">Save</button>
+  </div>
+  <div class="save-msg" id="save-msg"></div>
 </div>
 
 <script src="popup.js"></script>
-
 </body>
-
 </html>

@@ -1,168 +1,88 @@
-console.log("Background Loaded");
-
-// const URL = "https://api2.optime-ai.com/health";
 async function check() {
 
     const data = await chrome.storage.local.get("urls");
-
     const urls = data.urls || [];
 
+    let failedCount = 0;
 
     for (const item of urls) {
 
         try {
 
-            const response = await fetch(item.url);
+            const response = await fetch(item.url, { cache: "no-store" });
+            item.status = response.ok ? "up" : "down";
 
-            console.log(
-                item.name,
-                response.status
-            );
+        } catch (e) {
 
-        }
-        catch(e){
-
-            console.log(
-                item.name,
-                "DOWN"
-            );
+            item.status = "down";
 
         }
+
+        if (item.status === "down") failedCount++;
 
     }
 
-}
-
-async function setHealthyStatus(healthyCount, failedCount) {
+    await chrome.storage.local.set({ urls, lastCheck: new Date().toISOString() });
 
     if (failedCount === 0) {
 
-        chrome.action.setBadgeText({
-            text: ""
-        });
+        chrome.action.setBadgeText({ text: "" });
 
-    }
-    else {
+    } else {
 
-        chrome.action.setBadgeText({
-            text: failedCount.toString()
-        });
-
-        chrome.action.setBadgeBackgroundColor({
-            color: "#ff0000"
-        });
+        chrome.action.setBadgeText({ text: failedCount.toString() });
+        chrome.action.setBadgeBackgroundColor({ color: "#ef4444" });
 
     }
 
 }
 
 
-async function check() {
+async function rescheduleAlarm() {
 
-    console.log("Checking...");
+    const data = await chrome.storage.local.get("intervalMinutes");
+    const minutes = data.intervalMinutes || 1;
 
-    try {
+    await chrome.alarms.clear("health");
 
-        const response = await fetch(URL, {
-            cache: "no-store"
-        });
-
-
-        const data = await response.json();
-
-        console.log("Health:", data);
-        chrome.storage.local.set({
-            health: data,
-            lastCheck: new Date().toISOString()
-        });
-
-
-        const failedChecks = data.checks
-            ? data.checks.filter(x => x.status !== "Healthy")
-            : [];
-
-
-        const isHealthy =
-            response.ok &&
-            data.status === "Healthy" &&
-            failedChecks.length === 0;
-
-
-        if (isHealthy) {
-
-            console.log("Everything is OK");
-
-            await setHealthyStatus(
-                data.checks?.length ?? 0,
-                0
-            );
-
-        }
-        else {
-
-            console.log(
-                "Failed services:",
-                failedChecks
-            );
-
-            await setHealthyStatus(
-                data.checks?.length ?? 0,
-                failedChecks.length
-            );
-
-        }
-
-
-    }
-    catch (e) {
-
-        console.error("Health check failed:", e);
-
-
-        chrome.action.setBadgeText({
-            text: "!"
-        });
-
-
-        chrome.action.setBadgeBackgroundColor({
-            color: "#ff0000"
-        });
-
-    }
+    chrome.alarms.create("health", { periodInMinutes: minutes });
 
 }
 
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+    if (msg.action === "checkNow") {
+        check().then(() => sendResponse({ ok: true }));
+        return true;
+    }
+
+    if (msg.action === "reschedule") {
+        rescheduleAlarm().then(() => sendResponse({ ok: true }));
+        return true;
+    }
+
+});
 
 
 chrome.runtime.onInstalled.addListener(() => {
 
-    console.log("Installed");
-
     check();
-
-
-    chrome.alarms.create("health", {
-        periodInMinutes: 1
-    });
+    rescheduleAlarm();
 
 });
-
 
 
 chrome.runtime.onStartup.addListener(() => {
 
     check();
+    rescheduleAlarm();
 
 });
 
 
-
 chrome.alarms.onAlarm.addListener((alarm) => {
 
-    if (alarm.name === "health") {
-
-        check();
-
-    }
+    if (alarm.name === "health") check();
 
 });
