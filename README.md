@@ -19,7 +19,7 @@ A minimal Chrome extension that monitors your web services and alerts you when t
 
 <img width="117" height="55" alt="image" src="https://github.com/user-attachments/assets/74c52bde-fc87-4888-82da-85af9b45f07b" />
 
-icon with a number, indicating services down or not
+> icon with a number, indicating services down or not
 
 <img width="267" height="187" alt="image" src="https://github.com/user-attachments/assets/2a43d88c-8f17-4255-82b2-5b73dc414dfa" />
 
